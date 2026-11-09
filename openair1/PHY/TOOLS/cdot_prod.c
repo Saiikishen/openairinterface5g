@@ -26,7 +26,8 @@
 
 c32_t dot_product(const c16_t *x, const c16_t *y, const uint32_t N, const int output_shift)
 {
-  c32_t ret = {0, 0};
+  // Accumulate in unsigned so overflow wraps like the SIMD epi32 adds instead of being UB
+  uint32_t acc_r = 0, acc_i = 0;
   uint32_t i = 0;
 
 #if defined(__x86_64__) || defined(__i386__)
@@ -58,8 +59,8 @@ c32_t dot_product(const c16_t *x, const c16_t *y, const uint32_t N, const int ou
         simde_mm256_add_epi32(simde_mm512_castsi512_si256(cumul_im), simde_mm512_extracti64x4_epi64(cumul_im, 1));
     const simde__m256i cumulTmp = simde_mm256_hadd_epi32(re256, im256);
     const simde__m256i cumul = simde_mm256_hadd_epi32(cumulTmp, cumulTmp);
-    ret.r += simde_mm256_extract_epi32(cumul, 0) + simde_mm256_extract_epi32(cumul, 4);
-    ret.i += simde_mm256_extract_epi32(cumul, 1) + simde_mm256_extract_epi32(cumul, 5);
+    acc_r += (uint32_t)simde_mm256_extract_epi32(cumul, 0) + (uint32_t)simde_mm256_extract_epi32(cumul, 4);
+    acc_i += (uint32_t)simde_mm256_extract_epi32(cumul, 1) + (uint32_t)simde_mm256_extract_epi32(cumul, 5);
   }
 #endif
 #ifdef __AVX2__
@@ -82,8 +83,8 @@ c32_t dot_product(const c16_t *x, const c16_t *y, const uint32_t N, const int ou
     const simde__m256i cumulTmp = simde_mm256_hadd_epi32(cumul_re, cumul_im);
     const simde__m256i cumul = simde_mm256_hadd_epi32(cumulTmp, cumulTmp);
 
-    ret.r += simde_mm256_extract_epi32(cumul, 0) + simde_mm256_extract_epi32(cumul, 4);
-    ret.i += simde_mm256_extract_epi32(cumul, 1) + simde_mm256_extract_epi32(cumul, 5);
+    acc_r += (uint32_t)simde_mm256_extract_epi32(cumul, 0) + (uint32_t)simde_mm256_extract_epi32(cumul, 4);
+    acc_i += (uint32_t)simde_mm256_extract_epi32(cumul, 1) + (uint32_t)simde_mm256_extract_epi32(cumul, 5);
   }
 #endif
 #endif // defined(__x86_64__) || defined(__i386__)
@@ -107,14 +108,14 @@ c32_t dot_product(const c16_t *x, const c16_t *y, const uint32_t N, const int ou
 
     const simde__m128i cumulTmp = simde_mm_hadd_epi32(cumul_re, cumul_im);
     const simde__m128i cumul = simde_mm_hadd_epi32(cumulTmp, cumulTmp);
-    ret.r += simde_mm_extract_epi32(cumul, 0);
-    ret.i += simde_mm_extract_epi32(cumul, 1);
+    acc_r += (uint32_t)simde_mm_extract_epi32(cumul, 0);
+    acc_i += (uint32_t)simde_mm_extract_epi32(cumul, 1);
   }
 
   // scalar tail
   for (; i < N; i++) {
-    ret.r += ((x[i].r * y[i].r) >> output_shift) + ((x[i].i * y[i].i) >> output_shift);
-    ret.i += ((x[i].r * y[i].i) >> output_shift) - ((x[i].i * y[i].r) >> output_shift);
+    acc_r += (uint32_t)((x[i].r * y[i].r) >> output_shift) + (uint32_t)((x[i].i * y[i].i) >> output_shift);
+    acc_i += (uint32_t)((x[i].r * y[i].i) >> output_shift) - (uint32_t)((x[i].i * y[i].r) >> output_shift);
   }
-  return ret;
+  return (c32_t){(int32_t)acc_r, (int32_t)acc_i};
 }
