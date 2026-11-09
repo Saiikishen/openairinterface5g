@@ -799,7 +799,7 @@ void handle_prach_cplane_packet(oru_packet_processor_context_t *ctx,
     RATELIMIT(PRACH_ERR_LOG_RATELIMIT, { LOG_W(HW, "PRACH CP: Failed to adjust mbuf for section3 header\n"); });
     return;
   }
-  *((uint64_t *)section) = rte_be_to_cpu_64(*((uint64_t *)section));
+  xran_swap_be64_inplace(section);
   int aarx = ant_id - ctx->prach_eaxc_offset;
   if (aarx < 0 || aarx >= MAX_ANTENNAS) {
     RATELIMIT(PRACH_ERR_LOG_RATELIMIT,
@@ -987,7 +987,7 @@ void handle_cplane_packet(void *context, void *pkt)
         rte_pktmbuf_free(pkt);
         return;
       }
-      *((uint64_t *)section) = rte_be_to_cpu_64(*((uint64_t *)section));
+      xran_swap_be64_inplace(section);
       // Validates ext1/ext11 formatting; weights are extracted in a later stage
       parse_section1_extensions(ctx, pkt, section);
       if (hdr->cmnhdr.field.dataDirection == XRAN_DIR_DL) {

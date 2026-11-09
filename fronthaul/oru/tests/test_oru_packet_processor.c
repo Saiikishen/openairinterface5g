@@ -198,7 +198,7 @@ void test_cplane_timing_errors()
   sec->hdr.u.s1.numSymbol = 1;
   sec->hdr.u1.common.numPrbc = 0;
   // Need to handle endianness for section
-  *((uint64_t *)sec) = rte_be_to_cpu_64(*((uint64_t *)sec));
+  xran_swap_be64_inplace(sec);
 
   // Send early packet
   handle_cplane_packet(ctx, mbuf);
@@ -272,7 +272,7 @@ void test_cplane_uplane_match()
   sec->hdr.u.s1.numSymbol = 1;
   sec->hdr.u.s1.beamId = 37;
   sec->hdr.u1.common.numPrbc = 1;
-  *((uint64_t *)sec) = rte_be_to_cpu_64(*((uint64_t *)sec));
+  xran_swap_be64_inplace(sec);
 
   handle_cplane_packet(ctx, c_mbuf);
 
@@ -514,7 +514,7 @@ void test_dl_multi_section_same_beam()
     sec->hdr.u1.common.sectionId = section_ids[i];
     sec->hdr.u1.common.startPrbc = start_prbc[i];
     sec->hdr.u1.common.numPrbc = num_prbc[i];
-    *((uint64_t *)sec) = rte_be_to_cpu_64(*((uint64_t *)sec));
+    xran_swap_be64_inplace(sec);
     handle_cplane_packet(ctx, c_mbuf);
   }
 
@@ -545,7 +545,7 @@ void test_dl_multi_section_same_beam()
     sec->hdr.u1.common.sectionId = 0;
     sec->hdr.u1.common.startPrbc = 0;
     sec->hdr.u1.common.numPrbc = 10;
-    *((uint64_t *)sec) = rte_be_to_cpu_64(*((uint64_t *)sec));
+    xran_swap_be64_inplace(sec);
     handle_cplane_packet(ctx, c_mbuf);
   }
 
@@ -578,7 +578,7 @@ void test_dl_multi_section_same_beam()
     sec->hdr.u1.common.sectionId = 2; // new sectionId, not a duplicate
     sec->hdr.u1.common.startPrbc = 20;
     sec->hdr.u1.common.numPrbc = 10;
-    *((uint64_t *)sec) = rte_be_to_cpu_64(*((uint64_t *)sec));
+    xran_swap_be64_inplace(sec);
     handle_cplane_packet(ctx, c_mbuf);
   }
 
@@ -728,7 +728,7 @@ void test_frame_wrap_around()
   memset(sec, 0, sizeof(*sec));
   sec->hdr.u.s1.numSymbol = 1;
   sec->hdr.u1.common.numPrbc = 1;
-  *((uint64_t *)sec) = rte_be_to_cpu_64(*((uint64_t *)sec));
+  xran_swap_be64_inplace(sec);
 
   handle_cplane_packet(ctx, c_mbuf);
 
@@ -856,7 +856,7 @@ void test_cplane_14_symbols()
   memset(sec, 0, sizeof(*sec));
   sec->hdr.u.s1.numSymbol = 14;
   sec->hdr.u1.common.numPrbc = 1;
-  *((uint64_t *)sec) = rte_be_to_cpu_64(*((uint64_t *)sec));
+  xran_swap_be64_inplace(sec);
 
   handle_cplane_packet(ctx, c_mbuf);
 
@@ -1006,7 +1006,7 @@ void test_other_bw_4ant_prb_offset()
     sec->hdr.u.s1.numSymbol = 1;
     sec->hdr.u1.common.startPrbc = 20; // PRB offset
     sec->hdr.u1.common.numPrbc = 20; // subset of PRBs
-    *((uint64_t *)sec) = rte_be_to_cpu_64(*((uint64_t *)sec));
+    xran_swap_be64_inplace(sec);
     handle_cplane_packet(ctx, c_mbuf);
   }
 
@@ -1151,7 +1151,7 @@ void test_dl_wideband_fragments_4ant()
     sec->hdr.u.s1.numSymbol = 1;
     sec->hdr.u1.common.startPrbc = 0;
     sec->hdr.u1.common.numPrbc = 0; // 0 = all PRBs
-    *((uint64_t *)sec) = rte_be_to_cpu_64(*((uint64_t *)sec));
+    xran_swap_be64_inplace(sec);
     handle_cplane_packet(ctx, c_mbuf);
   }
 
@@ -1451,7 +1451,7 @@ void test_uplink_basic()
   sec->hdr.u1.common.numPrbc = 20;
   sec->hdr.u1.common.startPrbc = 0;
   sec->hdr.u1.common.sectionId = 123;
-  *((uint64_t *)sec) = rte_be_to_cpu_64(*((uint64_t *)sec));
+  xran_swap_be64_inplace(sec);
 
   handle_cplane_packet(ctx, c_mbuf);
 
@@ -1544,7 +1544,7 @@ void test_uplink_fragmentation()
   sec->hdr.u1.common.numPrbc = 40;
   sec->hdr.u1.common.startPrbc = 0;
   sec->hdr.u1.common.sectionId = 123;
-  *((uint64_t *)sec) = rte_be_to_cpu_64(*((uint64_t *)sec));
+  xran_swap_be64_inplace(sec);
 
   handle_cplane_packet(ctx, c_mbuf);
 
@@ -1638,7 +1638,7 @@ void test_uplink_large_mtu()
   sec->hdr.u1.common.numPrbc = 100;
   sec->hdr.u1.common.startPrbc = 0;
   sec->hdr.u1.common.sectionId = 123;
-  *((uint64_t *)sec) = rte_be_to_cpu_64(*((uint64_t *)sec));
+  xran_swap_be64_inplace(sec);
 
   handle_cplane_packet(ctx, c_mbuf);
 
@@ -1731,7 +1731,7 @@ void test_uplink_prb_offset()
   sec->hdr.u1.common.numPrbc = 20;
   sec->hdr.u1.common.startPrbc = 10; // PRB offset 10
   sec->hdr.u1.common.sectionId = 123;
-  *((uint64_t *)sec) = rte_be_to_cpu_64(*((uint64_t *)sec));
+  xran_swap_be64_inplace(sec);
 
   handle_cplane_packet(ctx, c_mbuf);
 
@@ -1840,7 +1840,7 @@ void test_prach_generation(int prach_eaxc_offset, bool check_sequence)
   sec->hdr.u1.common.startPrbc = 0;
   sec->hdr.u1.common.sectionId = 123;
   sec->hdr.u.s3.beamId = 5;
-  *((uint64_t *)sec) = rte_be_to_cpu_64(*((uint64_t *)sec));
+  xran_swap_be64_inplace(sec);
 
   handle_cplane_packet(ctx, c_mbuf);
   assert(get_prach_beam_id(ctx, slot_in_frame, 0) == 5); // section type 3 beamId carried to the job
@@ -1904,7 +1904,7 @@ void test_prach_generation(int prach_eaxc_offset, bool check_sequence)
   memset(sec, 0, sizeof(*sec));
   sec->hdr.u.s3.numSymbol = 1;
   sec->hdr.u1.common.numPrbc = 1;
-  *((uint64_t *)sec) = rte_cpu_to_be_64(*((uint64_t *)sec));
+  xran_swap_be64_inplace(sec);
   handle_cplane_packet(ctx, short_mbuf);
   const int sent_before_short = g_packets_sent;
   unsigned available = rte_mempool_avail_count(mp);
@@ -1974,7 +1974,7 @@ void test_hyper_frame_calculation()
   memset(sec, 0, sizeof(*sec));
   sec->hdr.u.s1.numSymbol = 1;
   sec->hdr.u1.common.numPrbc = 1;
-  *((uint64_t *)sec) = rte_be_to_cpu_64(*((uint64_t *)sec));
+  xran_swap_be64_inplace(sec);
 
   handle_cplane_packet(ctx, c_mbuf);
 
@@ -2084,7 +2084,7 @@ void test_dl_bfp_decompression(void)
   memset(sec, 0, sizeof(*sec));
   sec->hdr.u.s1.numSymbol = 1;
   sec->hdr.u1.common.numPrbc = n_prb;
-  *((uint64_t *)sec) = rte_be_to_cpu_64(*((uint64_t *)sec));
+  xran_swap_be64_inplace(sec);
   handle_cplane_packet(ctx, c_mbuf);
 
   current_sym += 3;
@@ -2207,7 +2207,7 @@ void test_ul_bfp_compression(void)
   sec->hdr.u1.common.numPrbc = g_ul_test_num_prb;
   sec->hdr.u1.common.startPrbc = 0;
   sec->hdr.u1.common.sectionId = 99;
-  *((uint64_t *)sec) = rte_be_to_cpu_64(*((uint64_t *)sec));
+  xran_swap_be64_inplace(sec);
   handle_cplane_packet(ctx, c_mbuf);
 
   // Poll UL job and verify compression params propagated from C-plane
@@ -2282,7 +2282,7 @@ void test_large_delay_profile()
   memset(sec, 0, sizeof(*sec));
   sec->hdr.u.s1.numSymbol = 1;
   sec->hdr.u1.common.numPrbc = 1;
-  *((uint64_t *)sec) = rte_be_to_cpu_64(*((uint64_t *)sec));
+  xran_swap_be64_inplace(sec);
 
   handle_cplane_packet(ctx, c_mbuf);
 
@@ -2369,7 +2369,7 @@ static void send_cplane_with_ext(void *ctx, int num_prbc, const uint8_t *ext, si
   sec->hdr.u.s1.numSymbol = 1;
   sec->hdr.u.s1.ef = 1;
   sec->hdr.u1.common.numPrbc = num_prbc;
-  *((uint64_t *)sec) = rte_be_to_cpu_64(*((uint64_t *)sec));
+  xran_swap_be64_inplace(sec);
   if (ext_len > 0) {
     uint8_t *dst = (uint8_t *)rte_pktmbuf_append(mbuf, ext_len);
     assert(dst != NULL);
