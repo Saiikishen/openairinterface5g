@@ -33,10 +33,10 @@ void exit_function(const char *file, const char *function, const int line, const
 extern "C" {
 int config_yaml_init(configmodule_interface_t *cfg);
 void config_yaml_end(configmodule_interface_t *cfg);
-int config_yaml_get(configmodule_interface_t *cfg, paramdef_t *cfgoptions, int numoptions, char *prefix);
-int config_yaml_getlist(configmodule_interface_t *cfg, paramlist_def_t *ParamList, paramdef_t *params, int numparams, char *prefix);
+int config_yaml_get(configmodule_interface_t *cfg, paramdef_t *cfgoptions, int numoptions, const char *prefix);
+int config_yaml_getlist(configmodule_interface_t *cfg, paramlist_def_t *ParamList, paramdef_t *params, int numparams, const char *prefix);
 void config_yaml_write_parsedcfg(configmodule_interface_t *cfg);
-int config_yaml_set(configmodule_interface_t *cfg, paramdef_t *cfgoptions, int numoptions, char *prefix);
+int config_yaml_set(configmodule_interface_t *cfg, paramdef_t *cfgoptions, int numoptions, const char *prefix);
 }
 
 TEST(yaml_config, yaml_basic) {
