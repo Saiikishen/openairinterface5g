@@ -1450,6 +1450,16 @@ static int nr_ue_process_dci_dl_11(NR_UE_MAC_INST_t *mac,
 
   dlsch_pdu->n_front_load_symb = 1; // default value
   set_antenna_port_parameters(dlsch_pdu, cw0 + cw1, max_length, dmrs_type, dci->antenna_ports.val);
+  // reserved antenna_ports values give no DMRS CDM group: possibly a false DCI
+  if (dlsch_pdu->n_dmrs_cdm_groups < 1 || dlsch_pdu->n_dmrs_cdm_groups > 3) {
+    LOG_W(MAC,
+          "[%d.%d] antenna_ports value %d (%d codewords) is reserved. Possibly due to false DCI. Ignoring DCI!\n",
+          frame,
+          slot,
+          dci->antenna_ports.val,
+          cw0 + cw1);
+    return -1;
+  }
   int nb_re_dmrs = ((dmrs_type == NULL) ? 6 : 4) * dlsch_pdu->n_dmrs_cdm_groups;
 
   /* dmrs symbol positions*/
